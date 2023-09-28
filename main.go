@@ -23,7 +23,11 @@ func main() {
 
 	// print version and exit
 	if slices.Contains(args, "--version") {
-		fmt.Printf("%s %s %s %s %s/%s\n", version, commithash, commitdate, runtime.Version(), runtime.GOOS, runtime.GOARCH)
+		if slices.Contains(args, "-v") {
+			fmt.Printf("%s %s %s %s %s/%s\n", version, commithash, commitdate, runtime.Version(), runtime.GOOS, runtime.GOARCH)
+		} else {
+			fmt.Printf("%s %s\n", version, commithash)
+		}
 		return
 	}
 
@@ -108,11 +112,13 @@ func handleError(err error, msg string) {
 
 func printHelp() {
 	fmt.Println("Usage:")
-	fmt.Println("    uts - print current unix timestamp")
-	fmt.Println("    uts <unix timestamp> - parse unix timestamp and print date")
-	fmt.Println("    uts <YYYY-MM-DDTHH:MM:SS> - parse datetime in local timezone, print unix timestamp")
-	fmt.Println("    uts <YYYY-MM-DDTHH:MM:SSZ> - parse datetime in UTC, print unix timestamp")
-	fmt.Println("    uts <YYYY-MM-DDTHH:MM:SS+02:00> - parse datetime with given timezone, print unix timestamp")
-	fmt.Println("    uts <YYYY-MM-DD> <HH:MM:SS> - parse date and time and print unix timestamp")
-	fmt.Println("    uts <YYYY-MM-DD> <HH:MM:SS> <timezone> - parse date, time, timezone and print unix timestamp")
+	fmt.Println("    uts --help                              print help and exit")
+	fmt.Println("    uts --version [-v]                      print (extended) version and exit")
+	fmt.Println("    uts                                     print current unix timestamp")
+	fmt.Println("    uts <unix timestamp>                    parse unix timestamp and print date")
+	fmt.Println("    uts <YYYY-MM-DDTHH:MM:SS>               parse datetime in local timezone, print unix timestamp")
+	fmt.Println("    uts <YYYY-MM-DDTHH:MM:SSZ>              parse datetime in UTC, print unix timestamp")
+	fmt.Println("    uts <YYYY-MM-DDTHH:MM:SS+02:00>         parse datetime with given timezone, print unix timestamp")
+	fmt.Println("    uts <YYYY-MM-DD> <HH:MM:SS>             parse date and time and print unix timestamp")
+	fmt.Println("    uts <YYYY-MM-DD> <HH:MM:SS> <timezone>  parse date, time, timezone and print unix timestamp")
 }
