@@ -39,7 +39,7 @@ func main() {
 	}
 
 	// 1695890808 - parse a unix timestamp
-	if nargs == 2 && len(args[1]) == 10 {
+	if nargs == 2 && len(args[1]) < 19 {
 		ts, err := strconv.ParseInt(args[1], 10, 64)
 		handleError(err, "cannot parse unix timestamp: %s")
 		fmt.Println(time.Unix(ts, 1).Format(time.RFC3339))
