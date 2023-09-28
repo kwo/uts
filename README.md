@@ -12,3 +12,9 @@ Usage:
     uts <YYYY-MM-DD> <HH:MM:SS>            - parse date and time and print unix timestamp  
     uts <YYYY-MM-DD> <HH:MM:SS> <timezone> - parse date, time, timezone and print unix timestamp  
 ```
+
+## Installation
+
+```sh
+brew install kwo/tools/uts
+```
