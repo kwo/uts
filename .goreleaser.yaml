@@ -15,7 +15,7 @@ builds:
       - netgo
       - timetzdata
     ldflags:
-      - -s -w -X main.version={{.Summary}} -X main.commithash={{.ShortCommit}} -X main.commitdate={{.CommitDate}}
+      - -s -w -X main.version={{.Summary}} -X main.commithash={{.ShortCommit}} -X main.commitTS={{.CommitTimestamp}}
     goos:
       - darwin
       - linux

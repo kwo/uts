@@ -13,7 +13,7 @@ import (
 //nolint:gochecknoglobals
 var (
 	commithash = "unknown"
-	commitdate = "unknown"
+	commitTS   = "unknown"
 	version    = "unknown"
 )
 
@@ -24,9 +24,11 @@ func main() {
 	// print version and exit
 	if slices.Contains(args, "--version") {
 		if slices.Contains(args, "-v") {
-			fmt.Printf("%s %s %s %s %s/%s\n", version, commithash, commitdate, runtime.Version(), runtime.GOOS, runtime.GOARCH)
+			ts, _ := strconv.ParseInt(commitTS, 10, 64)
+			dt := time.Unix(ts, 0).UTC().Format(time.DateOnly)
+			fmt.Printf("uts %s %s %s %s\n", version, commithash, dt, runtime.Version())
 		} else {
-			fmt.Printf("%s %s\n", version, commithash)
+			fmt.Printf("uts %s\n", version)
 		}
 		return
 	}
