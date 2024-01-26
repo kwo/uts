@@ -1,5 +1,7 @@
 # UTS Unix Timestamp
 
+`uts` is a tool to convert dates to unix timestamps and back. It compiles to a static binary without external dependencies and includes its own timezone database making it a perfect tool for minimal installations.
+
 ## Usage
 
 ```md
@@ -17,46 +19,55 @@ Usage:
 
 ## Examples
 
+Print the current unix timestamp.
 ```sh
 uts
 1696283053
 ```
 
+Parse the given unix timestamp.
 ```sh
 uts 1696283053
 2023-10-02T23:44:13+02:00
 ```
 
+Parse the given date using the local timezone.
 ```sh
 uts 2023-10-02T23:44:13
 1696283053
 ```
 
+Parse the given date using the UTC timezone.
 ```sh
 uts 2023-10-02T21:44:13Z
 1696283053
 ```
 
+Parse the given date using a timezone offset.
 ```sh
 uts 2023-10-02T23:44:13+02:00
 1696283053
 ```
 
+Parse the date and time, given as two separate arguments, using the local timezone.
 ```sh
 uts 2023-10-02 23:44:13
 1696283053
 ```
 
+Parse the date and time using a timezone offset.
 ```sh
 uts 2023-10-02 23:44:13 02:00
 1696283053
 ```
 
+Parse the date and time using a timezone offset.
 ```sh
 uts 2023-10-02 14:44:13 -07:00
 1696283053
 ```
 
+Parse the date and time using a named timezone.
 ```sh
 uts 2023-10-02 23:44:13 Europe/Berlin
 1696283053

@@ -10,6 +10,10 @@ import (
 	"time"
 )
 
+const (
+	lenDatetimeWithoutTZ = 19 // 2023-09-28T10:56:24
+)
+
 //nolint:gochecknoglobals
 var (
 	commithash = "unknown"
@@ -23,7 +27,7 @@ func main() {
 
 	// print version and exit
 	if slices.Contains(args, "--version") {
-		if slices.Contains(args, "-v") {
+		if slices.Contains(args, "-v") { // extended version
 			ts, _ := strconv.ParseInt(commitTS, 10, 64)
 			dt := time.Unix(ts, 0).UTC().Format(time.DateOnly)
 			fmt.Printf("uts %s %s %s %s\n", version, commithash, dt, runtime.Version())
@@ -45,7 +49,7 @@ func main() {
 	}
 
 	// 1695890808 - parse a unix timestamp
-	if nargs == 2 && len(args[1]) < 19 {
+	if nargs == 2 && len(args[1]) < lenDatetimeWithoutTZ {
 		ts, err := strconv.ParseInt(args[1], 10, 64)
 		handleError(err, "cannot parse unix timestamp: %s")
 		fmt.Println(time.Unix(ts, 1).Format(time.RFC3339))
@@ -53,7 +57,7 @@ func main() {
 	}
 
 	// 2023-09-28T10:56:24 - parse datetime in local timezone
-	if nargs == 2 && len(args[1]) == 19 {
+	if nargs == 2 && len(args[1]) == lenDatetimeWithoutTZ {
 		ts, err := time.ParseInLocation("2006-01-02T15:04:05", args[1], time.Local)
 		handleError(err, "cannot parse datetime: %s")
 		fmt.Printf("%d\n", ts.Unix())
