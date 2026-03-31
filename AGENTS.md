@@ -34,13 +34,6 @@ The project uses a comprehensive set of linters configured in `.golangci.yml`, i
 govulncheck -test .
 ```
 
-### Release build
-Releases are managed via goreleaser:
-```sh
-goreleaser release --snapshot --clean  # test release locally
-goreleaser release                      # actual release
-```
-
 ## Architecture
 
 ### Core Design
