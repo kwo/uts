@@ -3,7 +3,7 @@ set -euo pipefail
 
 repo="kwo/uts"
 script_name="scripts/homebrew-formula"
-unsupported_message="uts supports only macOS/Linux on amd64/arm64"
+unsupported_message="uts supports only macOS/Linux"
 
 tag=""
 
@@ -62,10 +62,7 @@ if ! release_assets_json="$(gh release view "$tag" --repo "$repo" --json assets,
 fi
 
 expected_assets=(
-  "uts_${tag}_darwin_amd64.tar.gz"
-  "uts_${tag}_darwin_arm64.tar.gz"
-  "uts_${tag}_linux_amd64.tar.gz"
-  "uts_${tag}_linux_arm64.tar.gz"
+  "uts_${tag}.tar.gz"
   "SHA256SUMS"
 )
 
@@ -103,27 +100,12 @@ while read -r checksum asset_name; do
   checksums["$asset_name"]="$checksum"
 done < "$tmpdir/SHA256SUMS"
 
-required_formula_assets=(
-  "uts_${tag}_darwin_amd64.tar.gz"
-  "uts_${tag}_darwin_arm64.tar.gz"
-  "uts_${tag}_linux_amd64.tar.gz"
-  "uts_${tag}_linux_arm64.tar.gz"
-)
-
-for asset_name in "${required_formula_assets[@]}"; do
-  [[ -n "${checksums[$asset_name]:-}" ]] || die "SHA256SUMS from release $tag is missing checksum for $asset_name"
-done
+formula_asset="uts_${tag}.tar.gz"
+[[ -n "${checksums[$formula_asset]:-}" ]] || die "SHA256SUMS from release $tag is missing checksum for $formula_asset"
 
 version="${tag#v}"
-macos_arm_url="${release_asset_urls[uts_${tag}_darwin_arm64.tar.gz]}"
-macos_amd64_url="${release_asset_urls[uts_${tag}_darwin_amd64.tar.gz]}"
-linux_arm_url="${release_asset_urls[uts_${tag}_linux_arm64.tar.gz]}"
-linux_amd64_url="${release_asset_urls[uts_${tag}_linux_amd64.tar.gz]}"
-
-macos_arm_sha="${checksums[uts_${tag}_darwin_arm64.tar.gz]}"
-macos_amd64_sha="${checksums[uts_${tag}_darwin_amd64.tar.gz]}"
-linux_arm_sha="${checksums[uts_${tag}_linux_arm64.tar.gz]}"
-linux_amd64_sha="${checksums[uts_${tag}_linux_amd64.tar.gz]}"
+formula_url="${release_asset_urls[$formula_asset]}"
+formula_sha="${checksums[$formula_asset]}"
 
 cat <<EOF
 # typed: false
@@ -133,42 +115,14 @@ cat <<EOF
 class Uts < Formula
   desc "Unix timestamp conversion CLI"
   homepage "https://github.com/kwo/uts"
+  url "$formula_url"
+  sha256 "$formula_sha"
   version "$version"
   depends_on "node"
 
-  on_macos do
-    if Hardware::CPU.arm?
-      url "$macos_arm_url"
-      sha256 "$macos_arm_sha"
-    elsif Hardware::CPU.intel?
-      url "$macos_amd64_url"
-      sha256 "$macos_amd64_sha"
-    end
-  end
-
-  on_linux do
-    if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
-      url "$linux_arm_url"
-      sha256 "$linux_arm_sha"
-    elsif Hardware::CPU.intel? && Hardware::CPU.is_64_bit?
-      url "$linux_amd64_url"
-      sha256 "$linux_amd64_sha"
-    end
-  end
-
   def install
-    if OS.mac?
-      if Hardware::CPU.arm? || Hardware::CPU.intel?
-        bin.install "uts"
-      else
-        odie "$unsupported_message"
-      end
-    elsif OS.linux?
-      if (Hardware::CPU.arm? || Hardware::CPU.intel?) && Hardware::CPU.is_64_bit?
-        bin.install "uts"
-      else
-        odie "$unsupported_message"
-      end
+    if OS.mac? || OS.linux?
+      bin.install "uts"
     else
       odie "$unsupported_message"
     end
