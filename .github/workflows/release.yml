@@ -2,7 +2,7 @@ name: release
 
 on:
   push:
-    tags: [ 'v*' ]
+    tags: ['v*']
 
 permissions:
   contents: write
@@ -19,22 +19,17 @@ jobs:
       - name: Check out source
         uses: actions/checkout@v6
 
-      - name: Set up Go
-        uses: actions/setup-go@v6
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
         with:
-          go-version-file: go.mod
-          cache: true
+          node-version: 24
+          cache: npm
 
-      - name: Check go mod tidy is clean
-        run: |
-          set -euo pipefail
-          go mod tidy
-          git diff --exit-code -- go.mod go.sum
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@v8
-        with:
-          version: latest
+      - name: Run lint
+        run: npm run lint
 
   build:
     name: build-${{ matrix.goos }}-${{ matrix.goarch }}
@@ -67,53 +62,54 @@ jobs:
       - name: Check out source
         uses: actions/checkout@v6
 
-      - name: Set up Go
-        uses: actions/setup-go@v6
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
         with:
-          go-version-file: go.mod
-          cache: true
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
 
       - name: Build archive
         env:
           GOOS: ${{ matrix.goos }}
           GOARCH: ${{ matrix.goarch }}
-          CGO_ENABLED: 0
           VERSION: ${{ github.ref_name }}
           COMMIT_HASH: ${{ github.sha }}
           ARCHIVE_EXT: ${{ matrix.archive_ext }}
         run: |
           set -euo pipefail
 
-          mkdir -p dist
+          mkdir -p dist/package
 
           commit_ts="$(git log -1 --format=%ct)"
 
-          binary_name=uts
-          if [ "$GOOS" = "windows" ]; then
-            binary_name=uts.exe
-          fi
+          UTS_VERSION="$VERSION" \
+          UTS_COMMIT_HASH="$COMMIT_HASH" \
+          UTS_COMMIT_TS="$commit_ts" \
+          npm run compile
+
+          chmod +x dist/uts
 
           asset_basename="uts_${VERSION}_${GOOS}_${GOARCH}"
-          binary_path="dist/${binary_name}"
 
-          go build \
-            -trimpath \
-            -buildvcs=true \
-            -tags "osusergo netgo timetzdata" \
-            -ldflags "-s -w -X main.version=${VERSION} -X main.commithash=${COMMIT_HASH} -X main.commitTS=${commit_ts}" \
-            -o "$binary_path" \
-            .
-
-          if [ "$ARCHIVE_EXT" = "zip" ]; then
+          if [ "$GOOS" = "windows" ]; then
+            mv dist/uts dist/package/uts.js
+            cat > dist/package/uts.cmd <<'EOF'
+@echo off
+node "%~dp0\uts.js" %*
+EOF
             (
-              cd dist
-              zip -j "${asset_basename}.zip" "${binary_name}"
+              cd dist/package
+              zip -q "../${asset_basename}.zip" uts.js uts.cmd
             )
           else
-            tar -C dist -czf "dist/${asset_basename}.tar.gz" "${binary_name}"
+            mv dist/uts dist/package/uts
+            tar -C dist/package -czf "dist/${asset_basename}.tar.gz" uts
           fi
 
-          rm -f "$binary_path"
+          rm -rf dist/package
 
       - name: Upload archive artifact
         uses: actions/upload-artifact@v7

@@ -134,6 +134,7 @@ class Uts < Formula
   desc "Unix timestamp conversion CLI"
   homepage "https://github.com/kwo/uts"
   version "$version"
+  depends_on "node"
 
   on_macos do
     if Hardware::CPU.arm?

@@ -1,0 +1,38 @@
+{
+  "name": "uts",
+  "version": "0.0.0",
+  "description": "Unix timestamp conversion CLI",
+  "type": "module",
+  "bin": {
+    "uts": "./dist/uts"
+  },
+  "scripts": {
+    "clean": "rimraf ./dist",
+    "dev": "tsx src/uts.ts",
+    "compile": "node ./scripts/build.mjs",
+    "link": "chmod +x dist/uts",
+    "build": "run-s lint clean compile link",
+    "lint": "run-s lint:format lint:ts lint:tsc",
+    "lint:ts": "eslint .",
+    "lint:tsc": "tsc -p tsconfig.json",
+    "lint:format": "prettier -c ./src ./scripts ./README.md ./BUILD.md",
+    "lint:formatfix": "prettier -w ./src ./scripts ./README.md ./BUILD.md"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.1",
+    "@types/node": "^24",
+    "@typescript-eslint/eslint-plugin": "8.46.3",
+    "@typescript-eslint/parser": "8.46.3",
+    "esbuild": "^0.27.4",
+    "eslint": "9.39.1",
+    "npm-run-all": "4.1.5",
+    "prettier": "3.6.2",
+    "rimraf": "6.1.0",
+    "tsx": "4.20.6",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.46.3"
+  }
+}

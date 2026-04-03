@@ -23,10 +23,26 @@ The GitHub Actions release workflow publishes archives with this naming pattern:
 - `uts_v<version>_windows_arm64.zip`
 - `SHA256SUMS`
 
-Archive layout is binary-only:
+Archive layout:
 
-- macOS/Linux archives extract a single `uts` binary at the archive root
-- Windows archives extract a single `uts.exe` binary at the archive root
+- macOS/Linux archives extract a single executable `uts` script at the archive root
+- Windows archives extract `uts.js` and `uts.cmd` at the archive root
+
+All archives contain the same bundled Node.js CLI; the matrix only changes packaging.
+
+## Local development
+
+```bash
+npm install
+npm run lint
+npm run build
+```
+
+Build metadata is injected through environment variables consumed by `scripts/build.mjs`:
+
+- `UTS_VERSION`
+- `UTS_COMMIT_HASH`
+- `UTS_COMMIT_TS`
 
 ## Generate the Homebrew formula
 
