@@ -4,8 +4,9 @@
     "scripts/*.mjs"
   ],
   "compilerOptions": {
+    "allowJs": true,
     "allowUnusedLabels": false,
-    "esModuleInterop": true,
+    "checkJs": true,
     "exactOptionalPropertyTypes": true,
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
@@ -13,20 +14,21 @@
       "ES2023",
       "ES2023.Intl"
     ],
-    "module": "es2022",
-    "moduleResolution": "bundler",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "noEmit": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
     "target": "es2023",
+    "useUnknownInCatchVariables": true,
     "types": [
       "node"
-    ]
+    ],
+    "verbatimModuleSyntax": true
   }
 }
